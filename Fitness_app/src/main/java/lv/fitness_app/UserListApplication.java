@@ -1,10 +1,24 @@
 package lv.fitness_app;
 
-import java.util.ArrayList;
-import java.util.List;
+import lv.fitness_app.console_ui.*;
+import lv.fitness_app.database.Database;
+import lv.fitness_app.database.InMemoryDatabaseImpl;
+import lv.fitness_app.services.AddUserService;
+import lv.fitness_app.services.GetAllUsersService;
+import lv.fitness_app.services.RemoveUserService;
+
 import java.util.Scanner;
 
 public class UserListApplication {
+
+	private static Database database = new InMemoryDatabaseImpl();
+	private static AddUserService addUserService = new AddUserService(database);
+	private static RemoveUserService removeUserService = new RemoveUserService(database);
+	private static GetAllUsersService getAllUsersService = new GetAllUsersService(database);
+	private static UIAction addUserUIAction = new AddUserUIAction(addUserService);
+	private static UIAction removeUserUIAction = new RemoveUserUIAction(removeUserService);
+	private static UIAction getAllUsersUIAction = new GetAllUsersUIAction(getAllUsersService);
+	private static UIAction exitUIAction = new ExitUIAction();
 
 	public static void main(String[] args) {
 		Database database = new InMemoryDatabaseImpl();
@@ -35,54 +49,21 @@ public class UserListApplication {
 			private static void executeSelectedMenuItem(Database database, int selectedMenu) {
 				switch (selectedMenu) {
 					case 1: {
-						addNewUserAction(database);
+					addUserUIAction.execute();	;
 						break;
 					}
 					case 2: {
-						removeUserAction(database);
+						removeUserUIAction.execute();
 						break;
 					}
 					case 3: {
-						printAllUsersAction(database);
+						getAllUsersUIAction.execute();
 						break;
 					}
 					case 4: {
-						exitProgramAction();
+						exitUIAction.execute();
 						break;
 					}
 				}
 			}
-
-			private static void exitProgramAction() {
-				System.out.println("Good by!");
-				System.exit(0);
-			}
-
-			private static void printAllUsersAction(Database database) {
-				System.out.println("User list: ");
-				database.getAllUsers().forEach(System.out::println);
-				System.out.println("User list end.");
-			}
-
-			private static void removeUserAction(Database database) {
-				Scanner scanner = new Scanner(System.in);
-				System.out.println("Enter user id to remove: ");
-				Long userId = Long.parseLong(scanner.nextLine());
-				database.deleteById(userId);
-				System.out.println("Your user was removed from list.");
-			}
-
-			private static void addNewUserAction(Database database) {
-				Scanner scanner = new Scanner(System.in);
-				System.out.println("Enter user id: ");
-				Long userId = Long.valueOf(scanner.nextLine());
-				System.out.println("Enter user name: ");
-				String userName = scanner.nextLine();
-				System.out.println("Enter user password: ");
-				String userPassword = scanner.nextLine();
-				User user = new User(userId, userName, userPassword);
-				database.save(user);
-				System.out.println("Your user was added to list.");
-			}
-
 	}
