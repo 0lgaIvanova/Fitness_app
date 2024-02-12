@@ -1,19 +1,23 @@
 package lv.fitness_app.console_ui;
 
-import lv.fitness_app.services.GetAllUsersService;
+import lv.fitness_app.core.requests.GetAllUsersRequest;
+import lv.fitness_app.core.responses.GetAllUsersResponse;
+import lv.fitness_app.core.services.GetAllUsersService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GetAllUsersUIAction implements UIAction {
 
-    private GetAllUsersService getAllUsersService;
-
-    public GetAllUsersUIAction(GetAllUsersService getAllUsersService) {
-        this.getAllUsersService = getAllUsersService;
-    }
+    @Autowired private GetAllUsersService getUsersService;
 
     @Override
     public void execute() {
         System.out.println("User list: ");
-        getAllUsersService.execute().forEach(System.out::println);
+        GetAllUsersRequest request = new GetAllUsersRequest();
+        GetAllUsersResponse response = getUsersService.execute(request);
+        response.getUsers().forEach(System.out::println);
         System.out.println("User list end.");
     }
+
 }
